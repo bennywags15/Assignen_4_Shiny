@@ -1,0 +1,13 @@
+name: MLS_Team_Data
+title: MLS_Team_Data
+username:
+account: benwagnerds
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 4872664
+bundleId: 5139392
+url: https://benwagnerds.shinyapps.io/MLS_Team_Data/
+when: 1634231668.94327
+lastSyncTime: 1634231668.94327
+asMultiple: FALSE
+asStatic: FALSE
