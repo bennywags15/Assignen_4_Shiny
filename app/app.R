@@ -27,13 +27,7 @@ stats <- as.data.frame(t(t(colnames(mls_team[5:15]))))
 stats <- stats %>% 
     rename("Stats:" = "V1")
 
-ui <- fluidPage(theme = bs_theme(primary = "#0e507d", 
-                                 secondary = "#D44420", 
-                                 base_font = list(font_google("Raleway"), "-apple-system", 
-                                                  "BlinkMacSystemFont", "Segoe UI", "Helvetica Neue", "Arial", 
-                                                  "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", 
-                                                  "Segoe UI Symbol"), 
-                                 bootswatch = "sandstone"),
+ui <- fluidPage(
 
     # Application title
     titlePanel("MLS Team Data"),
