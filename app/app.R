@@ -7,27 +7,51 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
 
-# Define UI for application that draws a histogram
-ui <- fluidPage(
+
+library(shiny)
+# If you need to install my gardenR library
+library(devtools)
+library(tidyverse)
+library(DT) # for table output
+library(rsconnect)
+
+
+mls_team <- read_csv(file = 'mls_team.csv')
+teams <- mls_team %>% 
+    distinct(Team) %>% 
+    arrange(Team) %>% 
+    pull(Team)
+
+stats <- as.data.frame(t(t(colnames(mls_team[5:15]))))
+stats <- stats %>% 
+    rename("Stats:" = "V1")
+
+ui <- fluidPage(theme = bs_theme(primary = "#0e507d", 
+                                 secondary = "#D44420", 
+                                 base_font = list(font_google("Raleway"), "-apple-system", 
+                                                  "BlinkMacSystemFont", "Segoe UI", "Helvetica Neue", "Arial", 
+                                                  "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", 
+                                                  "Segoe UI Symbol"), 
+                                 bootswatch = "sandstone"),
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("MLS Team Data"),
 
     # Sidebar with a slider input for number of bins 
     sidebarLayout(
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+            selectInput(inputId = "stat", # to use in code
+                        label = "Stat:", # how it looks in UI
+                        choices = stats, 
+                        selected = "ShtF"
+            )
         ),
 
         # Show a plot of the generated distribution
         mainPanel(
-           plotOutput("distPlot")
+            plotOutput(outputId = "team_stat"),
+            dataTableOutput(outputId = "team_stat_tbl")
         )
     )
 )
@@ -35,15 +59,23 @@ ui <- fluidPage(
 # Define server logic required to draw a histogram
 server <- function(input, output) {
 
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    team_smry <- reactive(mls_team %>% 
+        #filter(Stat == input$stat) %>% 
+        group_by(Team))
+    # Now use that function, with no arguments.
+    output$team_stat <- renderPlot({
+        team_smry() %>% 
+            ggplot(aes(x = Team, y = .data[[input$stat]])) +
+            geom_col(fill= "light blue")+
+            labs(title = paste(input$stat, "for each Team"),
+                 x = "",
+                 y = "") +
+            theme_minimal()
     })
+    
+    output$team_stat_tbl <- renderDataTable(team_smry())
 }
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
