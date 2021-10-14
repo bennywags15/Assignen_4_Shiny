@@ -15,6 +15,7 @@ library(devtools)
 library(tidyverse)
 library(DT) # for table output
 library(rsconnect)
+library(bslib)
 
 
 mls_team <- read_csv(file = 'mls_team.csv')
@@ -27,7 +28,15 @@ stats <- as.data.frame(t(t(colnames(mls_team[5:15]))))
 stats <- stats %>% 
     rename("Stats:" = "V1")
 
-ui <- fluidPage(
+ui <- fluidPage(theme = bs_theme(bg = "#28317a", 
+                                 fg = "#a3acff",
+                                 primary = "#2a327a", 
+                                 secondary = "#2a327a", 
+                                 base_font = list(font_google("Raleway"), "-apple-system", 
+                                                  "BlinkMacSystemFont", "Segoe UI", "Helvetica Neue", "Arial", 
+                                                  "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", 
+                                                  "Segoe UI Symbol"), 
+                                 bootswatch = "sandstone"),
 
     # Application title
     titlePanel("MLS Team Data"),
@@ -64,7 +73,14 @@ server <- function(input, output) {
             labs(title = paste(input$stat, "for each Team"),
                  x = "",
                  y = "") +
-            theme_minimal()
+            theme_minimal()+
+            theme(panel.grid.major.x = element_line(color = "#a3acff", size = 0.2),
+                  panel.grid.major.y = element_line(color = "#a3acff", size = 0.2),
+                  axis.text.x = element_text(colour = "#a3acff"),
+                  axis.text.y = element_text(colour = "#a3acff"),
+                  plot.title = element_text(color="#a3acff" ),
+                  panel.background = element_rect(fill = "#28317a"),
+                  plot.background = element_rect(fill = "#28317a"))
     })
     
     output$team_stat_tbl <- renderDataTable(team_smry())
